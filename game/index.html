@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shadow Ledger — a top-down stealth game</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #0a0d16;
+    color: #dfe4f2;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 18px 12px 24px;
+  }
+  h1 {
+    margin: 0 0 4px;
+    font-size: 26px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #f4d35e;
+  }
+  .sub { margin: 0 0 14px; color: #9aa3bd; font-size: 14px; }
+  #stage { position: relative; width: 960px; max-width: 96vw; }
+  canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: #202635;
+    border: 1px solid #39415e;
+    border-radius: 6px;
+  }
+  #hud {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #141827;
+    border: 1px solid #2a3049;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+  #objective { flex: 1; }
+  #suspicion-bar {
+    width: 170px;
+    height: 12px;
+    background: #0a0d16;
+    border: 1px solid #39415e;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  #suspicion-fill { height: 100%; width: 0%; background: #ffd75e; transition: width 0.12s linear; }
+  #suspicion-label { min-width: 86px; font-weight: 700; letter-spacing: 0.06em; }
+  #alarm {
+    color: #ff5040;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    animation: blink 0.5s steps(2) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0.25; } }
+  #timer { font-variant-numeric: tabular-nums; font-weight: 700; }
+  .overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: rgba(6, 8, 15, 0.82);
+    border-radius: 6px;
+    padding: 24px;
+  }
+  /* display:flex above beats the UA [hidden] rule, so hide explicitly. */
+  .overlay[hidden] { display: none; }
+  .overlay h2 { margin: 0 0 8px; font-size: 34px; letter-spacing: 0.16em; color: #f4d35e; }
+  .overlay p { margin: 6px 0; max-width: 560px; line-height: 1.5; color: #c6cde2; }
+  .overlay .key { color: #ffd75e; font-weight: 700; }
+  .controls { margin-top: 10px; font-size: 13px; color: #9aa3bd; }
+  kbd {
+    background: #232a3d;
+    border: 1px solid #4a5478;
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: inherit;
+  }
+</style>
+</head>
+<body>
+  <h1>Shadow Ledger</h1>
+  <p class="sub">A top-down stealth game — steal the ledger, slip out unseen.</p>
+  <div id="stage">
+    <canvas id="game" width="960" height="640"></canvas>
+    <div class="overlay" id="overlay-title">
+      <h2>SHADOW LEDGER</h2>
+      <p>Night in the Hall of Records. Four guards walk their rounds under the lamps.
+      Stay out of their vision cones, hide in the shadows, and lift the golden
+      <span class="key">Ledger</span> — then reach the green <span class="key">EXIT</span>.</p>
+      <p>Seen too long and the alarm sounds: break line of sight and wait it out.
+      Running is loud. <span class="key">Shift</span> sneaks.</p>
+      <p><span class="key">Press Enter to begin</span></p>
+      <p class="controls"><kbd>W A S D</kbd> / <kbd>← ↑ ↓ →</kbd> move &nbsp;·&nbsp; <kbd>Shift</kbd> sneak &nbsp;·&nbsp; click to walk there &nbsp;·&nbsp; <kbd>M</kbd> mute &nbsp;·&nbsp; <kbd>R</kbd> restart</p>
+    </div>
+    <div class="overlay" id="overlay-won" hidden>
+      <h2>CLEAN GETAWAY</h2>
+      <p id="win-stats"></p>
+      <p>The Ledger is yours, and no guard ever knew you were there — or if they did, you were already gone.</p>
+      <p><span class="key">Press R to steal it again</span></p>
+    </div>
+    <div class="overlay" id="overlay-caught" hidden>
+      <h2>SPOTTED!</h2>
+      <p>A guard laid hands on you in the dark. The Ledger stays on its plinth — for now.</p>
+      <p><span class="key">Press R to try again</span></p>
+    </div>
+  </div>
+  <div id="hud">
+    <span id="objective">Steal the golden Ledger, then reach the EXIT.</span>
+    <span id="alarm" hidden>⚠ ALARM</span>
+    <span id="suspicion-label">UNSEEN</span>
+    <span id="suspicion-bar"><span id="suspicion-fill" style="display:block"></span></span>
+    <span id="timer">00:00</span>
+  </div>
+  <p class="controls">WASD / arrows to move · Shift to sneak · click to walk there · M mute · R restart</p>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
